@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Additio Clone Ultra Completo</title>
+<title>Additio Clone Avanzado</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:Arial,sans-serif;display:flex;height:100vh;background:#f3f4f6;color:#111827;}
@@ -30,7 +30,7 @@ table{width:100%;border-collapse:collapse;margin-top:1rem;}
 th,td{border:1px solid #cbd5e1;padding:0.5rem;text-align:center;}
 th{background:#2563eb;color:white;}
 /* Modal */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:100;}
 .modal-content{background:white;padding:1rem;border-radius:12px;max-width:500px;width:90%;}
 .modal-header{font-size:1.2rem;color:#1e40af;margin-bottom:0.5rem;}
 .modal-footer{display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1rem;}
@@ -50,6 +50,7 @@ th{background:#2563eb;color:white;}
     <button id="evalGroupsBtn">📂 Evaluación y grupos ▾</button>
     <div class="submenu" id="evalGroupsSubmenu">
       <button onclick="openNewClassForm()">➕ Nuevo grupo-clase</button>
+      <button onclick="openNewRubricForm()">➕ Crear rúbrica</button>
     </div>
     <button>📘 Unidades didácticas y proyectos</button>
     <button>📝 Programación y seguimiento</button>
@@ -65,9 +66,105 @@ th{background:#2563eb;color:white;}
   <div id="content" class="card"></div>
 </div>
 
-<!-- Modal para nuevo grupo-clase -->
+<!-- Modal Nuevo Grupo-Clase -->
 <div class="modal" id="classModal">
   <div class="modal-content">
     <div class="modal-header">Nuevo grupo-clase</div>
     <form id="modalClassForm">
-      <div><label>Nombre del grupo-clase:</label><input type="text
+      <div><label>Nombre del grupo-clase:</label><input type="text" id="modalClassName" required></div>
+      <div><label>Materia:</label><input type="text" id="modalClassSubject" required></div>
+      <div><label>Fecha inicio:</label><input type="date" id="modalClassStart" required></div>
+      <div><label>Fecha fin:</label><input type="date" id="modalClassEnd" required></div>
+      <div><label>Día:</label><select id="modalClassDay"><option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option><option value="4">Jueves</option><option value="5">Viernes</option></select></div>
+      <div><label>Hora inicio:</label><input type="time" id="modalClassHourStart" required></div>
+      <div><label>Hora fin:</label><input type="time" id="modalClassHourEnd" required></div>
+      <div class="modal-footer">
+        <button type="button" onclick="closeClassModal()">Cancelar</button>
+        <button type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Crear Rúbrica -->
+<div class="modal" id="rubricModal">
+  <div class="modal-content">
+    <div class="modal-header">Crear Rúbrica</div>
+    <form id="modalRubricForm">
+      <div><label>Nombre:</label><input type="text" id="rubricName" required></div>
+      <div><label>Número de columnas:</label><input type="number" id="rubricColumns" min="1" required></div>
+      <div><label>Número de filas:</label><input type="number" id="rubricRows" min="1" required></div>
+      <div><label>Ancho de columnas (px):</label><input type="number" id="rubricWidth" min="50"></div>
+      <div><label>Altura de filas (px):</label><input type="number" id="rubricHeight" min="20"></div>
+      <div><label>Seleccionar capacidad:</label><input type="text" id="rubricCapacity"></div>
+      <div><label>Evaluación formativa:</label><input type="checkbox" id="rubricFormative"></div>
+      <div class="modal-footer">
+        <button type="button" onclick="closeRubricModal()">Cancelar</button>
+        <button type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// -----------------------------
+// Datos
+// -----------------------------
+let students = JSON.parse(localStorage.getItem('students')) || ["JUAN MANUEL CHAVARRIAGA ESCALANTE","RAYANE FATAH","NOLAN JUSTO FLORES KUPIS","ERIK HERMOSÍN REYES","IKER HURTADO PLAZA","LEV OBORIN","IZAN OLLER VALLES","JUAN LUIS TAPIA QUETGLAS","JUAN ANDRES UBIÑA FERRAGUT","MOISÉS VALLESPIR MOLINERA","MARIO VIETE BARBER"];
+let classSchedule = JSON.parse(localStorage.getItem('classSchedule')) || [];
+let rubrics = JSON.parse(localStorage.getItem('rubrics')) || [];
+
+// -----------------------------
+// Menú lateral colapsable
+// -----------------------------
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menuToggle');
+const evalGroupsBtn = document.getElementById('evalGroupsBtn');
+const evalGroupsSubmenu = document.getElementById('evalGroupsSubmenu');
+
+menuToggle.addEventListener('click',()=>{sidebar.classList.toggle('collapsed');});
+evalGroupsBtn.addEventListener('click',()=>{evalGroupsSubmenu.style.display=evalGroupsSubmenu.style.display==='flex'?'none':'flex';});
+
+// -----------------------------
+// Secciones
+// -----------------------------
+function showSection(section){
+  const content=document.getElementById('content');
+  content.innerHTML="";
+  if(section==='hoy'){
+    content.innerHTML="<h1>📅 Clases de Hoy</h1><ul id='classList'></ul>";
+    const ul=document.getElementById('classList');
+    const today=new Date().getDay();
+    const todayClasses=classSchedule.filter(c=>c.days.includes(today));
+    if(todayClasses.length===0){const li=document.createElement('li');li.textContent="No hay clases hoy 🎉";ul.appendChild(li);}
+    else todayClasses.forEach(c=>{const li=document.createElement('li');li.textContent=`${c.name} (${c.subject}) ${c.start} - ${c.end}`;ul.appendChild(li);});
+  } else if(section==='config'){
+    content.innerHTML="<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";
+  }
+}
+
+// -----------------------------
+// Modal Nuevo Grupo-Clase
+// -----------------------------
+const classModal = document.getElementById('classModal');
+function openNewClassForm(){classModal.style.display='flex';}
+function closeClassModal(){classModal.style.display='none';}
+document.getElementById('modalClassForm').onsubmit=e=>{
+  e.preventDefault();
+  const name=document.getElementById('modalClassName').value.trim();
+  const subject=document.getElementById('modalClassSubject').value.trim();
+  const startDate=document.getElementById('modalClassStart').value;
+  const endDate=document.getElementById('modalClassEnd').value;
+  const day=parseInt(document.getElementById('modalClassDay').value);
+  const start=document.getElementById('modalClassHourStart').value;
+  const end=document.getElementById('modalClassHourEnd').value;
+  classSchedule.push({id:Date.now(),name,subject,startDate,endDate,days:[day],start,end});
+  localStorage.setItem('classSchedule',JSON.stringify(classSchedule));
+  closeClassModal();
+  showSection('hoy');
+}
+
+// -----------------------------
+// Modal Crear Rúbrica
+// -----------------------------
+const
