@@ -3,43 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clases de Hoy</title>
+  <title>Additio Clone</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
       background: #f9fafb;
       color: #111827;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
-    header {
+    /* Menu lateral */
+    .sidebar {
+      width: 220px;
       background: #2563eb;
       color: white;
-      width: 100%;
+      display: flex;
+      flex-direction: column;
       padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
     }
-    .container {
-      margin-top: 2rem;
-      padding: 1rem;
+    .sidebar h2 {
+      margin-bottom: 2rem;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+    .menu button {
+      background: none;
+      border: none;
+      color: white;
+      text-align: left;
+      padding: 0.8rem;
+      margin-bottom: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+    }
+    .menu button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    /* Contenido principal */
+    .main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .card {
       background: white;
       border-radius: 12px;
+      padding: 1.5rem;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 600px;
-      width: 90%;
+      max-width: 800px;
+      margin: auto;
     }
-    h2 {
-      margin-bottom: 1rem;
+    h1 {
       color: #2563eb;
+      margin-bottom: 1rem;
     }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
+    ul { list-style: none; padding: 0; }
     li {
       padding: 0.8rem;
       margin-bottom: 0.5rem;
@@ -47,47 +68,136 @@
       border-radius: 8px;
       transition: background 0.2s;
     }
-    li:hover {
-      background: #f3f4f6;
+    li:hover { background: #f3f4f6; }
+    button.small {
+      margin-left: 1rem;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      border: none;
+      background: #ef4444;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <header>📚 Mis Clases de Hoy</header>
-  <div class="container">
-    <h2>¿Qué clases tengo hoy?</h2>
-    <ul id="classList"></ul>
+  <!-- Menú lateral -->
+  <div class="sidebar">
+    <h2>📚 Additio Clone</h2>
+    <div class="menu">
+      <button onclick="showSection('hoy')">📅 Clases de Hoy</button>
+      <button onclick="showSection('alumnos')">👥 Alumnos</button>
+      <button onclick="showSection('rubricas')">📊 Rúbricas</button>
+      <button onclick="showSection('config')">⚙️ Configuración</button>
+      <button onclick="showSection('horario')">🕒 Clases / Horario</button>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main">
+    <div id="content" class="card"></div>
   </div>
 
   <script>
-    // Lista de clases
-    const classes = [
-      "COMUNICACIÓ I SOCIETAT 1",
-      "Equips Elèctrics i Electrònics",
-      "Muntatge i Manteniment d'Equips Informàtics 25/26",
-      "CIÈNCIES APLICADES I INFORMÀTICA"
+    // Datos iniciales
+    const students = [
+      "JUAN MANUEL CHAVARRIAGA ESCALANTE",
+      "RAYANE FATAH",
+      "NOLAN JUSTO FLORES KUPIS",
+      "ERIK HERMOSÍN REYES",
+      "IKER HURTADO PLAZA",
+      "LEV OBORIN",
+      "IZAN OLLER VALLES",
+      "JUAN LUIS TAPIA QUETGLAS",
+      "JUAN ANDRES UBIÑA FERRAGUT",
+      "MOISÉS VALLESPIR MOLINERA",
+      "MARIO VIETE BARBER"
     ];
 
-    // Simulamos horario simple (ejemplo: lunes y miércoles hay 2 clases)
-    const schedule = {
-      1: [classes[0], classes[1]], // Lunes
-      2: [classes[2], classes[3]], // Martes
-      3: [classes[0], classes[3]], // Miércoles
-      4: [classes[1], classes[2]], // Jueves
-      5: [classes[0], classes[1], classes[2]], // Viernes
-    };
+    // Estado de clases con horario
+    // Cada clase: id, nombre, dias (1–5), horaInicio, horaFin
+    let classSchedule = JSON.parse(localStorage.getItem("classSchedule") || "[]");
 
-    // Día actual
-    const today = new Date().getDay(); // 0 = domingo ... 6 = sábado
-    const todayClasses = schedule[today] || ["No tienes clases hoy 🎉"];
+    // Mostrar secciones
+    function showSection(section) {
+      const content = document.getElementById("content");
+      content.innerHTML = ""; // limpiar
 
-    // Mostrar en la página
-    const list = document.getElementById("classList");
-    todayClasses.forEach(cls => {
-      const li = document.createElement("li");
-      li.textContent = cls;
-      list.appendChild(li);
-    });
-  </script>
-</body>
-</html>
+      if (section === "hoy") {
+        content.innerHTML = "<h1>📅 ¿Qué clases tengo hoy?</h1><ul id='classList'></ul>";
+        loadToday();
+      }
+      else if (section === "alumnos") {
+        content.innerHTML = "<h1>👥 Lista de Alumnos</h1><ul id='studentList'></ul>";
+        const list = document.getElementById("studentList");
+        students.forEach(s => {
+          const li = document.createElement("li");
+          li.textContent = s;
+          list.appendChild(li);
+        });
+      }
+      else if (section === "rubricas") {
+        content.innerHTML = "<h1>📊 Rúbricas</h1><p>Aquí podrás gestionar tus rúbricas (prototipo).</p>";
+      }
+      else if (section === "config") {
+        content.innerHTML = "<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";
+      }
+      else if (section === "horario") {
+        showHorarioSection();
+      }
+    }
+
+    // Función para mostrar y gestionar horario
+    function showHorarioSection() {
+      const content = document.getElementById("content");
+      content.innerHTML = `
+        <h1>🕒 Gestionar Clases / Horario</h1>
+        <form id="classForm">
+          <div>
+            <label>Nombre de clase:</label>
+            <input type="text" id="className" required>
+          </div>
+          <div>
+            <label>Días (1=Lunes ... 5=Viernes, separa con comas):</label>
+            <input type="text" id="classDays" placeholder="1,3,5" required>
+          </div>
+          <div>
+            <label>Hora inicio:</label>
+            <input type="time" id="classStart" required>
+          </div>
+          <div>
+            <label>Hora fin:</label>
+            <input type="time" id="classEnd" required>
+          </div>
+          <button type="submit">Añadir / Guardar</button>
+        </form>
+        <h2>Clases existentes</h2>
+        <ul id="scheduleList"></ul>
+      `;
+
+      const form = document.getElementById("classForm");
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const name = document.getElementById("className").value.trim();
+        const days = document.getElementById("classDays").value
+          .split(",")
+          .map(d => Number(d.trim()))
+          .filter(d => d >=1 && d <=5);
+        const start = document.getElementById("classStart").value;
+        const end = document.getElementById("classEnd").value;
+
+        const newClass = { id: Date.now(), name, days, start, end };
+        classSchedule.push(newClass);
+        localStorage.setItem("classSchedule", JSON.stringify(classSchedule));
+        showHorarioSection();
+      };
+
+      renderScheduleList();
+      function renderScheduleList() {
+        const ul = document.getElementById("scheduleList");
+        ul.innerHTML = "";
+        classSchedule.forEach(cls => {
+          const li = document.createElement("li");
+          li.textContent = `${cls.name}: días ${cls.days.join(", ")} de ${cls.start} a ${cls.end}`;
+          const btn = document.createElement("butto
