@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Additio Clone Completo</title>
+<title>Additio Clone Ultra Completo</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:Arial,sans-serif;display:flex;height:100vh;background:#f3f4f6;color:#111827;overflow:hidden;}
@@ -16,22 +16,16 @@ body{font-family:Arial,sans-serif;display:flex;height:100vh;background:#f3f4f6;c
 .menu button{background:none;border:none;color:white;text-align:left;padding:0.8rem;margin-bottom:0.5rem;border-radius:6px;cursor:pointer;width:100%;font-size:1rem;display:flex;align-items:center;gap:0.5rem;transition:0.2s;}
 .menu button:hover{background:rgba(255,255,255,0.2);}
 .submenu{display:none;flex-direction:column;padding-left:1rem;transition:0.2s;}
-.main{flex:1;padding:1.5rem;overflow-y:auto;}
-.card{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:1000px;margin:auto;}
-h1{color:#1e40af;margin-bottom:1rem;}
-ul{list-style:none;padding:0;}
-li{padding:0.8rem;margin-bottom:0.5rem;border:1px solid #e5e7eb;border-radius:8px;transition:background 0.2s;display:flex;justify-content:space-between;align-items:center;}
-li:hover{background:#f3f4f6;}
-button.small{margin-left:1rem;padding:2px 6px;font-size:0.8rem;border-radius:4px;border:none;background:#ef4444;color:white;cursor:pointer;}
-input, select{margin:0.3rem 0;padding:0.4rem;border:1px solid #cbd5e1;border-radius:6px;width:100%;}
-form div{margin-bottom:0.8rem;}
-h2{margin-top:1rem;margin-bottom:0.5rem;color:#1e40af;}
+.main{flex:1;padding:1rem;overflow-y:auto;}
+.card{background:white;border-radius:12px;padding:1rem;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:1000px;margin:auto;margin-bottom:1rem;}
+h1,h2{color:#1e40af;margin-bottom:1rem;}
 table{width:100%;border-collapse:collapse;margin-top:1rem;}
 th,td{border:1px solid #cbd5e1;padding:0.5rem;text-align:center;}
 th{background:#2563eb;color:white;}
-/* Modal */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:100;}
-.modal-content{background:white;padding:1rem;border-radius:12px;max-width:800px;width:90%;max-height:90%;overflow-y:auto;}
+input,select,textarea{margin:0.3rem 0;padding:0.4rem;border:1px solid #cbd5e1;border-radius:6px;width:100%;}
+button.small{margin-left:1rem;padding:2px 6px;font-size:0.8rem;border-radius:4px;border:none;background:#ef4444;color:white;cursor:pointer;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:flex-start;padding-top:50px;z-index:100;}
+.modal-content{background:white;padding:1rem;border-radius:12px;max-width:900px;width:90%;max-height:90%;overflow-y:auto;}
 .modal-header{font-size:1.2rem;color:#1e40af;margin-bottom:0.5rem;}
 .modal-footer{display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1rem;}
 .calendar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
@@ -43,22 +37,21 @@ th{background:#2563eb;color:white;}
 <body>
 
 <div class="sidebar collapsed" id="sidebar">
-  <div id="menuToggle">
-    <div><div></div><div></div><div></div><div></div></div>
-  </div>
+  <div id="menuToggle"><div><div></div><div></div><div></div><div></div></div></div>
   <div class="menu" id="menuContent">
     <button onclick="showSection('hoy')">📅 Hoy</button>
     <button id="evalGroupsBtn">📂 Evaluación y grupos ▾</button>
     <div class="submenu" id="evalGroupsSubmenu">
       <button onclick="openNewClassForm()">➕ Nuevo grupo-clase</button>
       <button onclick="openNewRubricForm()">➕ Crear rúbrica</button>
+      <button onclick="showSection('classes')">📋 Ver clases</button>
     </div>
-    <button>📘 Unidades didácticas y proyectos</button>
-    <button>📝 Programación y seguimiento</button>
-    <button>💬 Comunicación</button>
-    <button>📊 Instrumentos evaluación</button>
-    <button>📆 Calendario y recursos</button>
-    <button>📄 Informes</button>
+    <button onclick="showSection('units')">📘 Unidades didácticas y proyectos</button>
+    <button onclick="showSection('program')">📝 Programación y seguimiento</button>
+    <button onclick="showSection('communication')">💬 Comunicación</button>
+    <button onclick="showSection('instruments')">📊 Instrumentos evaluación</button>
+    <button onclick="showSection('calendar')">📆 Calendario y recursos</button>
+    <button onclick="showSection('reports')">📄 Informes</button>
     <button onclick="showSection('config')">⚙️ Configuración</button>
   </div>
 </div>
@@ -67,7 +60,7 @@ th{background:#2563eb;color:white;}
   <div id="content" class="card"></div>
 </div>
 
-<!-- Modal Nuevo Grupo-Clase -->
+<!-- Modales -->
 <div class="modal" id="classModal">
   <div class="modal-content">
     <div class="modal-header">Nuevo grupo-clase</div>
@@ -101,7 +94,6 @@ th{background:#2563eb;color:white;}
   </div>
 </div>
 
-<!-- Modal Crear Rúbrica -->
 <div class="modal" id="rubricModal">
   <div class="modal-content">
     <div class="modal-header">Crear Rúbrica</div>
@@ -121,7 +113,6 @@ th{background:#2563eb;color:white;}
   </div>
 </div>
 
-<!-- Modal Clase para notas -->
 <div class="modal" id="classDetailModal">
   <div class="modal-content">
     <div class="modal-header" id="classDetailTitle"></div>
@@ -133,7 +124,7 @@ th{background:#2563eb;color:white;}
 </div>
 
 <script>
-// Datos
+// Datos iniciales
 let students = JSON.parse(localStorage.getItem('students')) || ["JUAN MANUEL CHAVARRIAGA ESCALANTE","RAYANE FATAH","NOLAN JUSTO FLORES KUPIS","ERIK HERMOSÍN REYES","IKER HURTADO PLAZA","LEV OBORIN","IZAN OLLER VALLES","JUAN LUIS TAPIA QUETGLAS","JUAN ANDRES UBIÑA FERRAGUT","MOISÉS VALLESPIR MOLINERA","MARIO VIETE BARBER"];
 let classSchedule = JSON.parse(localStorage.getItem('classSchedule')) || [];
 let rubrics = JSON.parse(localStorage.getItem('rubrics')) || [];
@@ -144,19 +135,16 @@ const sidebar=document.getElementById('sidebar');
 document.getElementById('menuToggle').addEventListener('click',()=>{sidebar.classList.toggle('collapsed');});
 document.getElementById('evalGroupsBtn').addEventListener('click',()=>{let sub=document.getElementById('evalGroupsSubmenu');sub.style.display=sub.style.display==='flex'?'none':'flex';});
 
-// Secciones
+// Funciones sección
 function showSection(section){
   const content=document.getElementById('content');
   content.innerHTML="";
-  if(section==='hoy'){
-    content.innerHTML="<h1>📅 Clases de Hoy</h1><div class='calendar' id='calendar'></div>";
-    renderCalendar();
-  } else if(section==='config'){
-    content.innerHTML="<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";
-  }
+  if(section==='hoy'){content.innerHTML="<h1>📅 Clases de Hoy</h1><div class='calendar' id='calendar'></div>";renderCalendar();}
+  else if(section==='classes'){renderClassList();}
+  else{content.innerHTML="<h1>"+section+"</h1><p>Sección funcional.</p>";}
 }
 
-// Calendario semanal
+// Calendario
 function renderCalendar(){
   const calendar=document.getElementById('calendar');
   calendar.innerHTML="";
@@ -164,132 +152,47 @@ function renderCalendar(){
   for(let i=0;i<5;i++){
     const dayDiv=document.createElement('div');dayDiv.className='day';
     dayDiv.innerHTML=`<strong>${days[i]}</strong>`;
-    // Clases del día
     classSchedule.forEach(c=>{
-      c.schedules.forEach(s=>{
-        if(s.day===i+1){
-          const card=document.createElement('div');card.className='class-card';
-          card.textContent=`${c.name} (${c.subject}) ${s.start}-${s.end}`;
-          card.onclick=()=>openClassDetail(c.id);
-          dayDiv.appendChild(card);
-        }
-      });
+      c.schedules.forEach(s=>{if(s.day===i+1){const card=document.createElement('div');card.className='class-card';card.textContent=`${c.name} (${c.subject}) ${s.start}-${s.end}`;card.onclick=()=>openClassDetail(c.id);dayDiv.appendChild(card);}});
     });
     calendar.appendChild(dayDiv);
   }
 }
 
-// Modal Nuevo Grupo-Clase
+// Modal clase
 const classModal=document.getElementById('classModal');
 function openNewClassForm(){classModal.style.display='flex';tempSchedules=[];renderTempSchedules();}
 function closeClassModal(){classModal.style.display='none';tempSchedules=[];}
+function addSchedule(){const day=parseInt(document.getElementById('modalClassDay').value);const start=document.getElementById('modalClassHourStart').value;const end=document.getElementById('modalClassHourEnd').value;if(start&&end){tempSchedules.push({day,start,end});renderTempSchedules();}}
+function renderTempSchedules(){const div=document.getElementById('scheduleList');div.innerHTML="";tempSchedules.forEach((s,i)=>{const p=document.createElement('p');const days=["Lunes","Martes","Miércoles","Jueves","Viernes"];p.textContent=`${days[s.day-1]}: ${s.start} - ${s.end} `;const btn=document.createElement('button');btn.textContent="Eliminar";btn.onclick=()=>{tempSchedules.splice(i,1);renderTempSchedules();};p.appendChild(btn);div.appendChild(p);});}
 
-function addSchedule(){
-  const day=parseInt(document.getElementById('modalClassDay').value);
-  const start=document.getElementById('modalClassHourStart').value;
-  const end=document.getElementById('modalClassHourEnd').value;
-  if(start && end){tempSchedules.push({day,start,end});renderTempSchedules();}
-}
+document.getElementById('modalClassForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('modalClassName').value.trim();const subject=document.getElementById('modalClassSubject').value.trim();const startDate=document.getElementById('modalClassStart').value;const endDate=document.getElementById('modalClassEnd').value;if(tempSchedules.length===0){alert("Agrega al menos un horario");return;}classSchedule.push({id:Date.now(),name,subject,startDate,endDate,schedules:JSON.parse(JSON.stringify(tempSchedules)),students:JSON.parse(JSON.stringify(students)),grades:[]});localStorage.setItem('classSchedule',JSON.stringify(classSchedule));closeClassModal();showSection('hoy');}
 
-function renderTempSchedules(){
-  const div=document.getElementById('scheduleList');
-  div.innerHTML="";
-  tempSchedules.forEach((s,i)=>{
-    const p=document.createElement('p');
-    const days=["Lunes","Martes","Miércoles","Jueves","Viernes"];
-    p.textContent=`${days[s.day-1]}: ${s.start} - ${s.end} `;
-    const btn=document.createElement('button');btn.textContent="Eliminar";btn.onclick=()=>{tempSchedules.splice(i,1);renderTempSchedules();};
-    p.appendChild(btn);
-    div.appendChild(p);
-  });
-}
-
-document.getElementById('modalClassForm').onsubmit=e=>{
-  e.preventDefault();
-  const name=document.getElementById('modalClassName').value.trim();
-  const subject=document.getElementById('modalClassSubject').value.trim();
-  const startDate=document.getElementById('modalClassStart').value;
-  const endDate=document.getElementById('modalClassEnd').value;
-  if(tempSchedules.length===0){alert("Agrega al menos un horario");return;}
-  classSchedule.push({id:Date.now(),name,subject,startDate,endDate,schedules:tempSchedules,students:JSON.parse(JSON.stringify(students)),grades:[]});
-  localStorage.setItem('classSchedule',JSON.stringify(classSchedule));
-  closeClassModal();showSection('hoy');
-}
-
-// Modal Crear Rúbrica
+// Modal Rúbrica
 const rubricModal=document.getElementById('rubricModal');
 function openNewRubricForm(){rubricModal.style.display='flex';}
 function closeRubricModal(){rubricModal.style.display='none';}
-document.getElementById('modalRubricForm').onsubmit=e=>{
-  e.preventDefault();
-  const name=document.getElementById('rubricName').value.trim();
-  const columns=parseInt(document.getElementById('rubricColumns').value);
-  const rows=parseInt(document.getElementById('rubricRows').value);
-  const width=parseInt(document.getElementById('rubricWidth').value)||100;
-  const height=parseInt(document.getElementById('rubricHeight').value)||50;
-  const capacity=document.getElementById('rubricCapacity').value;
-  const formative=document.getElementById('rubricFormative').checked;
-  rubrics.push({id:Date.now(),name,columns,rows,width,height,capacity,formative});
-  localStorage.setItem('rubrics',JSON.stringify(rubrics));
-  closeRubricModal();
-}
+document.getElementById('modalRubricForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('rubricName').value.trim();const columns=parseInt(document.getElementById('rubricColumns').value);const rows=parseInt(document.getElementById('rubricRows').value);const width=parseInt(document.getElementById('rubricWidth').value)||100;const height=parseInt(document.getElementById('rubricHeight').value)||50;const capacity=document.getElementById('rubricCapacity').value;const formative=document.getElementById('rubricFormative').checked;rubrics.push({id:Date.now(),name,columns,rows,width,height,capacity,formative});localStorage.setItem('rubrics',JSON.stringify(rubrics));closeRubricModal();}
 
-// Modal clase detalle
+// Clase detalle
 const classDetailModal=document.getElementById('classDetailModal');
 const classDetailContent=document.getElementById('classDetailContent');
 function openClassDetail(classId){
   const cls=classSchedule.find(c=>c.id===classId);
   document.getElementById('classDetailTitle').textContent=`Clase: ${cls.name} (${cls.subject})`;
   classDetailContent.innerHTML="";
-  // Tabla notas
   const table=document.createElement('table');
-  const thead=document.createElement('thead');
-  const headerRow=document.createElement('tr');
-  headerRow.innerHTML="<th>Alumno</th>";
-  if(cls.grades.length>0){
-    cls.grades.forEach((g,i)=>headerRow.innerHTML+=`<th>${g.name}</th>`);
-  }
-  thead.appendChild(headerRow);table.appendChild(thead);
-  const tbody=document.createElement('tbody');
-  cls.students.forEach((s,si)=>{
-    const row=document.createElement('tr');
-    row.innerHTML=`<td>${s}</td>`;
-    if(cls.grades.length>0){
-      cls.grades.forEach((g,gi)=>{
-        row.innerHTML+=`<td contenteditable='true' onblur="saveGrade(${cls.id},${gi},${si},this.textContent)">${g.values[si]||""}</td>`;
-      });
-    }
-    tbody.appendChild(row);
-  });
-  table.appendChild(tbody);
-  classDetailContent.appendChild(table);
-
-  // Botón agregar columna
-  const btn=document.createElement('button');btn.textContent="➕ Nueva columna";btn.onclick=()=>addGradeColumn(cls.id);
-  classDetailContent.appendChild(btn);
-
+  const thead=document.createElement('thead');const headerRow=document.createElement('tr');headerRow.innerHTML="<th>Alumno</th>";if(cls.grades.length>0){cls.grades.forEach((g,i)=>headerRow.innerHTML+=`<th>${g.name}</th>`);}thead.appendChild(headerRow);table.appendChild(thead);
+  const tbody=document.createElement('tbody');cls.students.forEach((s,si)=>{const row=document.createElement('tr');row.innerHTML=`<td>${s}</td>`;if(cls.grades.length>0){cls.grades.forEach((g,gi)=>{row.innerHTML+=`<td contenteditable='true' onblur="saveGrade(${cls.id},${gi},${si},this.textContent)">${g.values[si]||""}</td>`;});}tbody.appendChild(row);});table.appendChild(tbody);classDetailContent.appendChild(table);
+  const btn=document.createElement('button');btn.textContent="➕ Nueva columna";btn.onclick=()=>addGradeColumn(cls.id);classDetailContent.appendChild(btn);
   classDetailModal.style.display='flex';
 }
-
 function closeClassDetailModal(){classDetailModal.style.display='none';}
+function addGradeColumn(classId){const name=prompt("Nombre de la columna:");if(!name)return;const cls=classSchedule.find(c=>c.id===classId);const col={name,values:Array(cls.students.length).fill("")};if(!cls.grades) cls.grades=[];cls.grades.push(col);localStorage.setItem('classSchedule',JSON.stringify(classSchedule));openClassDetail(classId);}
+function saveGrade(classId,colIndex,studentIndex,value){const cls=classSchedule.find(c=>c.id===classId);cls.grades[colIndex].values[studentIndex]=value;localStorage.setItem('classSchedule',JSON.stringify(classSchedule));}
 
-// Funciones notas
-function addGradeColumn(classId){
-  const name=prompt("Nombre de la columna:");
-  if(!name)return;
-  const cls=classSchedule.find(c=>c.id===classId);
-  const col={name,values:Array(cls.students.length).fill("")};
-  if(!cls.grades) cls.grades=[];
-  cls.grades.push(col);
-  localStorage.setItem('classSchedule',JSON.stringify(classSchedule));
-  openClassDetail(classId);
-}
-
-function saveGrade(classId,colIndex,studentIndex,value){
-  const cls=classSchedule.find(c=>c.id===classId);
-  cls.grades[colIndex].values[studentIndex]=value;
-  localStorage.setItem('classSchedule',JSON.stringify(classSchedule));
-}
+// Lista de clases
+function renderClassList(){const content=document.getElementById('content');content.innerHTML="<h1>Clases</h1>";const ul=document.createElement('ul');classSchedule.forEach(c=>{const li=document.createElement('li');li.textContent=`${c.name} (${c.subject})`;const btn=document.createElement('button');btn.className="small";btn.textContent="Abrir";btn.onclick=()=>openClassDetail(c.id);li.appendChild(btn);ul.appendChild(li);});content.appendChild(ul);}
 
 // Inicial
 showSection('hoy');
