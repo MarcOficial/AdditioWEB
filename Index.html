@@ -1,244 +1,179 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Additio Clone</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      background: #f9fafb;
-      color: #111827;
-    }
-    /* Menu lateral */
-    .sidebar {
-      width: 220px;
-      background: #2563eb;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-    }
-    .sidebar h2 {
-      margin-bottom: 2rem;
-      font-size: 1.2rem;
-      text-align: center;
-    }
-    .menu button {
-      background: none;
-      border: none;
-      color: white;
-      text-align: left;
-      padding: 0.8rem;
-      margin-bottom: 0.5rem;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 1rem;
-    }
-    .menu button:hover {
-      background: rgba(255,255,255,0.2);
-    }
-    /* Contenido principal */
-    .main {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      color: #2563eb;
-      margin-bottom: 1rem;
-    }
-    ul { list-style: none; padding: 0; }
-    li {
-      padding: 0.8rem;
-      margin-bottom: 0.5rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      transition: background 0.2s;
-    }
-    li:hover { background: #f3f4f6; }
-    button.small {
-      margin-left: 1rem;
-      padding: 2px 6px;
-      font-size: 0.8rem;
-      border-radius: 4px;
-      border: none;
-      background: #ef4444;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Additio Clone Avanzado</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,sans-serif;display:flex;height:100vh;background:#f3f4f6;color:#111827;}
+.sidebar{width:220px;background:#1e40af;color:white;display:flex;flex-direction:column;padding:1rem;}
+.sidebar h2{text-align:center;margin-bottom:2rem;font-size:1.3rem;}
+.menu button{background:none;border:none;color:white;text-align:left;padding:0.8rem;margin-bottom:0.5rem;border-radius:6px;cursor:pointer;width:100%;font-size:1rem;display:flex;align-items:center;gap:0.5rem;}
+.menu button:hover{background:rgba(255,255,255,0.2);}
+.main{flex:1;padding:1.5rem;overflow-y:auto;}
+.card{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:900px;margin:auto;}
+h1{color:#1e40af;margin-bottom:1rem;}
+ul{list-style:none;padding:0;}
+li{padding:0.8rem;margin-bottom:0.5rem;border:1px solid #e5e7eb;border-radius:8px;transition:background 0.2s;display:flex;justify-content:space-between;align-items:center;}
+li:hover{background:#f3f4f6;}
+button.small{margin-left:1rem;padding:2px 6px;font-size:0.8rem;border-radius:4px;border:none;background:#ef4444;color:white;cursor:pointer;}
+input, select{margin:0.3rem 0;padding:0.4rem;border:1px solid #cbd5e1;border-radius:6px;width:100%;}
+form div{margin-bottom:0.8rem;}
+h2{margin-top:1rem;margin-bottom:0.5rem;color:#1e40af;}
+</style>
 </head>
 <body>
-  <!-- Menú lateral -->
-  <div class="sidebar">
-    <h2>📚 Additio Clone</h2>
-    <div class="menu">
-      <button onclick="showSection('hoy')">📅 Clases de Hoy</button>
-      <button onclick="showSection('alumnos')">👥 Alumnos</button>
-      <button onclick="showSection('rubricas')">📊 Rúbricas</button>
-      <button onclick="showSection('config')">⚙️ Configuración</button>
-      <button onclick="showSection('horario')">🕒 Clases / Horario</button>
-    </div>
+
+<div class="sidebar">
+  <h2>📚 Additio Clone</h2>
+  <div class="menu">
+    <button onclick="showSection('hoy')">📅 Hoy</button>
+    <button onclick="showSection('alumnos')">👥 Alumnos</button>
+    <button onclick="showSection('rubricas')">📊 Rúbricas</button>
+    <button onclick="showSection('horario')">🕒 Clases / Horario</button>
+    <button onclick="showSection('config')">⚙️ Configuración</button>
   </div>
+</div>
 
-  <!-- Contenido principal -->
-  <div class="main">
-    <div id="content" class="card"></div>
-  </div>
+<div class="main">
+  <div id="content" class="card"></div>
+</div>
 
-  <script>
-    // Datos iniciales
-    const students = [
-      "JUAN MANUEL CHAVARRIAGA ESCALANTE",
-      "RAYANE FATAH",
-      "NOLAN JUSTO FLORES KUPIS",
-      "ERIK HERMOSÍN REYES",
-      "IKER HURTADO PLAZA",
-      "LEV OBORIN",
-      "IZAN OLLER VALLES",
-      "JUAN LUIS TAPIA QUETGLAS",
-      "JUAN ANDRES UBIÑA FERRAGUT",
-      "MOISÉS VALLESPIR MOLINERA",
-      "MARIO VIETE BARBER"
-    ];
+<script>
+// Datos alumnos
+const students = [
+  "JUAN MANUEL CHAVARRIAGA ESCALANTE",
+  "RAYANE FATAH",
+  "NOLAN JUSTO FLORES KUPIS",
+  "ERIK HERMOSÍN REYES",
+  "IKER HURTADO PLAZA",
+  "LEV OBORIN",
+  "IZAN OLLER VALLES",
+  "JUAN LUIS TAPIA QUETGLAS",
+  "JUAN ANDRES UBIÑA FERRAGUT",
+  "MOISÉS VALLESPIR MOLINERA",
+  "MARIO VIETE BARBER"
+];
 
-    // Estado de clases con horario
-    // Cada clase: id, nombre, dias (1–5), horaInicio, horaFin
-    let classSchedule = JSON.parse(localStorage.getItem("classSchedule") || "[]");
+// Clases y horario
+let classSchedule = JSON.parse(localStorage.getItem("classSchedule") || "[]");
 
-    // Mostrar secciones
-    function showSection(section) {
-      const content = document.getElementById("content");
-      content.innerHTML = ""; // limpiar
+// Rúbricas
+let rubrics = JSON.parse(localStorage.getItem("rubrics") || "[]");
 
-      if (section === "hoy") {
-        content.innerHTML = "<h1>📅 ¿Qué clases tengo hoy?</h1><ul id='classList'></ul>";
-        loadToday();
-      }
-      else if (section === "alumnos") {
-        content.innerHTML = "<h1>👥 Lista de Alumnos</h1><ul id='studentList'></ul>";
-        const list = document.getElementById("studentList");
-        students.forEach(s => {
-          const li = document.createElement("li");
-          li.textContent = s;
-          list.appendChild(li);
-        });
-      }
-      else if (section === "rubricas") {
-        content.innerHTML = "<h1>📊 Rúbricas</h1><p>Aquí podrás gestionar tus rúbricas (prototipo).</p>";
-      }
-      else if (section === "config") {
-        content.innerHTML = "<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";
-      }
-      else if (section === "horario") {
-        showHorarioSection();
-      }
-    }
+// Mostrar sección principal
+function showSection(section){
+  const content=document.getElementById("content");
+  content.innerHTML="";
+  if(section==='hoy'){
+    content.innerHTML="<h1>📅 Clases de Hoy</h1><ul id='classList'></ul>";
+    loadToday();
+  }
+  else if(section==='alumnos'){
+    content.innerHTML="<h1>👥 Lista de Alumnos</h1><ul id='studentList'></ul>";
+    const ul=document.getElementById('studentList');
+    students.forEach(s=>{const li=document.createElement('li');li.textContent=s;ul.appendChild(li);});
+  }
+  else if(section==='rubricas'){
+    showRubricasSection();
+  }
+  else if(section==='horario'){
+    showHorarioSection();
+  }
+  else if(section==='config'){
+    content.innerHTML="<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";
+  }
+}
 
-    // Función para mostrar y gestionar horario
-    function showHorarioSection() {
-      const content = document.getElementById("content");
-      content.innerHTML = `
-        <h1>🕒 Gestionar Clases / Horario</h1>
-        <form id="classForm">
-          <div>
-            <label>Nombre de clase:</label>
-            <input type="text" id="className" required>
-          </div>
-          <div>
-            <label>Días (1=Lunes ... 5=Viernes, separa con comas):</label>
-            <input type="text" id="classDays" placeholder="1,3,5" required>
-          </div>
-          <div>
-            <label>Hora inicio:</label>
-            <input type="time" id="classStart" required>
-          </div>
-          <div>
-            <label>Hora fin:</label>
-            <input type="time" id="classEnd" required>
-          </div>
-          <button type="submit">Añadir / Guardar</button>
-        </form>
-        <h2>Clases existentes</h2>
-        <ul id="scheduleList"></ul>
-      `;
+// Función Hoy
+function loadToday(){
+  const ul=document.getElementById('classList'); ul.innerHTML="";
+  const today=new Date().getDay();
+  const weekday=today; //1-5
+  const todayClasses=classSchedule.filter(c=>c.days.includes(weekday)).sort((a,b)=>a.start.localeCompare(b.start));
+  if(todayClasses.length===0){const li=document.createElement('li');li.textContent="No tienes clases hoy 🎉";ul.appendChild(li);}
+  else todayClasses.forEach(c=>{const li=document.createElement('li');li.textContent=`${c.name} — ${c.start} / ${c.end}`;ul.appendChild(li);});
+}
 
-      const form = document.getElementById("classForm");
-      form.onsubmit = (e) => {
-        e.preventDefault();
-        const name = document.getElementById("className").value.trim();
-        const days = document.getElementById("classDays").value
-          .split(",")
-          .map(d => Number(d.trim()))
-          .filter(d => d >=1 && d <=5);
-        const start = document.getElementById("classStart").value;
-        const end = document.getElementById("classEnd").value;
+// Función Horario
+function showHorarioSection(){
+  const content=document.getElementById('content');
+  content.innerHTML=`
+    <h1>🕒 Gestionar Clases / Horario</h1>
+    <form id="classForm">
+      <div><label>Nombre de clase:</label><input type="text" id="className" required></div>
+      <div><label>Días (1=Lunes ...5=Viernes, separa con comas):</label><input type="text" id="classDays" placeholder="1,3,5" required></div>
+      <div><label>Hora inicio:</label><input type="time" id="classStart" required></div>
+      <div><label>Hora fin:</label><input type="time" id="classEnd" required></div>
+      <button type="submit">Añadir / Guardar</button>
+    </form>
+    <h2>Clases existentes</h2>
+    <ul id="scheduleList"></ul>
+  `;
+  document.getElementById('classForm').onsubmit=e=>{
+    e.preventDefault();
+    const name=document.getElementById('className').value.trim();
+    const days=document.getElementById('classDays').value.split(',').map(d=>Number(d.trim())).filter(d=>d>=1 && d<=5);
+    const start=document.getElementById('classStart').value;
+    const end=document.getElementById('classEnd').value;
+    classSchedule.push({id:Date.now(),name,days,start,end});
+    localStorage.setItem("classSchedule",JSON.stringify(classSchedule));
+    showHorarioSection();
+  };
+  renderScheduleList();
+  function renderScheduleList(){
+    const ul=document.getElementById('scheduleList'); ul.innerHTML="";
+    classSchedule.forEach(c=>{
+      const li=document.createElement('li');
+      li.textContent=`${c.name}: días ${c.days.join(', ')} de ${c.start} a ${c.end}`;
+      const btn=document.createElement('button'); btn.textContent="Eliminar"; btn.className="small";
+      btn.onclick=()=>{classSchedule=classSchedule.filter(x=>x.id!==c.id);localStorage.setItem("classSchedule",JSON.stringify(classSchedule));showHorarioSection();}
+      li.appendChild(btn); ul.appendChild(li);
+    });
+  }
+}
 
-        const newClass = { id: Date.now(), name, days, start, end };
-        classSchedule.push(newClass);
-        localStorage.setItem("classSchedule", JSON.stringify(classSchedule));
-        showHorarioSection();
-      };
+// Función Rúbricas
+function showRubricasSection(){
+  const content=document.getElementById('content');
+  content.innerHTML=`
+    <h1>📊 Gestionar Rúbricas</h1>
+    <form id="rubricForm">
+      <div><label>Nombre rúbrica:</label><input type="text" id="rubricName" required></div>
+      <div><label>Criterios (nombre:porcentaje, separados por coma)</label><input type="text" id="rubricCriteria" placeholder="Examen:70,Trabajo:30" required></div>
+      <button type="submit">Crear Rúbrica</button>
+    </form>
+    <h2>Rúbricas existentes</h2>
+    <ul id="rubricList"></ul>
+  `;
+  document.getElementById('rubricForm').onsubmit=e=>{
+    e.preventDefault();
+    const name=document.getElementById('rubricName').value.trim();
+    const criteriaInput=document.getElementById('rubricCriteria').value.trim();
+    const criteria=criteriaInput.split(',').map(c=>{
+      const [k,v]=c.split(':'); return {name:k.trim(),weight:Number(v.trim())};
+    });
+    rubrics.push({id:Date.now(),name,criteria});
+    localStorage.setItem("rubrics",JSON.stringify(rubrics));
+    showRubricasSection();
+  };
+  renderRubrics();
+  function renderRubrics(){
+    const ul=document.getElementById('rubricList'); ul.innerHTML="";
+    rubrics.forEach(r=>{
+      const li=document.createElement('li');
+      li.textContent=`${r.name} — ${r.criteria.map(c=>c.name+':'+c.weight).join(', ')}`;
+      const btn=document.createElement('button'); btn.textContent="Eliminar"; btn.className="small";
+      btn.onclick=()=>{rubrics=rubrics.filter(x=>x.id!==r.id);localStorage.setItem("rubrics",JSON.stringify(rubrics));showRubricasSection();}
+      li.appendChild(btn); ul.appendChild(li);
+    });
+  }
+}
 
-      renderScheduleList();
-      function renderScheduleList() {
-        const ul = document.getElementById("scheduleList");
-        ul.innerHTML = "";
-        classSchedule.forEach(cls => {
-          const li = document.createElement("li");
-          li.textContent = `${cls.name}: días ${cls.days.join(", ")} de ${cls.start} a ${cls.end}`;
-          const btn = document.createElement("button");
-          btn.textContent = "Eliminar";
-          btn.className = "small";
-          btn.onclick = () => {
-            classSchedule = classSchedule.filter(c => c.id !== cls.id);
-            localStorage.setItem("classSchedule", JSON.stringify(classSchedule));
-            showHorarioSection();
-          };
-          li.appendChild(btn);
-          ul.appendChild(li);
-        });
-      }
-    }
+// Inicializar
+showSection('hoy');
+</script>
 
-    // Función para mostrar clases de hoy
-    function loadToday() {
-      const list = document.getElementById("classList");
-      list.innerHTML = "";
-      const today = new Date().getDay(); // 0 dom ... 6 sab
-      const weekday = today; // usamos 1–5
-      const classesToday = classSchedule
-        .filter(c => c.days.includes(weekday))
-        .sort((a,b) => a.start.localeCompare(b.start));
-
-      if (classesToday.length === 0) {
-        const li = document.createElement("li");
-        li.textContent = "No tienes clases hoy 🎉";
-        list.appendChild(li);
-      } else {
-        classesToday.forEach(cls => {
-          const li = document.createElement("li");
-          li.textContent = `${cls.name} — ${cls.start} / ${cls.end}`;
-          list.appendChild(li);
-        });
-      }
-    }
-
-    // Cargar sección inicial
-    showSection("hoy");
-  </script>
 </body>
 </html>
