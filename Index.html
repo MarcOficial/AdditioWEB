@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Additio Clone Avanzado</title>
+<title>Additio Clone Ultra Realista</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial,sans-serif;display:flex;height:100vh;background:#f3f4f6;color:#111827;}
+body{font-family:Arial,sans-serif;display:flex;height:100vh;background:#f3f4f6;color:#111827;overflow:hidden;}
 .sidebar{width:220px;background:#1e40af;color:white;display:flex;flex-direction:column;transition:width 0.3s;overflow:hidden;position:relative;}
 .sidebar.collapsed{width:50px;}
 #menuToggle{cursor:pointer;display:flex;justify-content:center;padding:0.5rem;}
 #menuToggle div{width:20px;height:20px;background:#fff;display:flex;flex-wrap:wrap;gap:2px;padding:2px;border-radius:4px;}
 #menuToggle div div{width:6px;height:6px;background:#1e40af;}
 .menu{display:flex;flex-direction:column;padding:0.5rem;}
-.menu button{background:none;border:none;color:white;text-align:left;padding:0.8rem;margin-bottom:0.5rem;border-radius:6px;cursor:pointer;width:100%;font-size:1rem;display:flex;align-items:center;gap:0.5rem;}
+.menu button{background:none;border:none;color:white;text-align:left;padding:0.8rem;margin-bottom:0.5rem;border-radius:6px;cursor:pointer;width:100%;font-size:1rem;display:flex;align-items:center;gap:0.5rem;transition:0.2s;}
 .menu button:hover{background:rgba(255,255,255,0.2);}
-.submenu{display:none;flex-direction:column;padding-left:1rem;}
+.submenu{display:none;flex-direction:column;padding-left:1rem;transition:0.2s;}
 .main{flex:1;padding:1.5rem;overflow-y:auto;}
 .card{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:900px;margin:auto;}
 h1{color:#1e40af;margin-bottom:1rem;}
@@ -31,9 +31,12 @@ th,td{border:1px solid #cbd5e1;padding:0.5rem;text-align:center;}
 th{background:#2563eb;color:white;}
 /* Modal */
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:100;}
-.modal-content{background:white;padding:1rem;border-radius:12px;max-width:500px;width:90%;}
+.modal-content{background:white;padding:1rem;border-radius:12px;max-width:600px;width:90%;max-height:90%;overflow-y:auto;}
 .modal-header{font-size:1.2rem;color:#1e40af;margin-bottom:0.5rem;}
 .modal-footer{display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1rem;}
+.calendar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+.calendar .day{border:1px solid #cbd5e1;padding:5px;border-radius:6px;min-height:80px;position:relative;}
+.calendar .class-card{position:absolute;top:2px;left:2px;right:2px;padding:2px 4px;background:#2563eb;color:white;border-radius:4px;font-size:0.8rem;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -44,7 +47,6 @@ th{background:#2563eb;color:white;}
       <div></div><div></div><div></div><div></div>
     </div>
   </div>
-
   <div class="menu" id="menuContent">
     <button onclick="showSection('hoy')">📅 Hoy</button>
     <button id="evalGroupsBtn">📂 Evaluación y grupos ▾</button>
@@ -71,7 +73,7 @@ th{background:#2563eb;color:white;}
   <div class="modal-content">
     <div class="modal-header">Nuevo grupo-clase</div>
     <form id="modalClassForm">
-      <div><label>Nombre del grupo-clase:</label><input type="text" id="modalClassName" required></div>
+      <div><label>Nombre:</label><input type="text" id="modalClassName" required></div>
       <div><label>Materia:</label><input type="text" id="modalClassSubject" required></div>
       <div><label>Fecha inicio:</label><input type="date" id="modalClassStart" required></div>
       <div><label>Fecha fin:</label><input type="date" id="modalClassEnd" required></div>
@@ -94,9 +96,9 @@ th{background:#2563eb;color:white;}
       <div><label>Nombre:</label><input type="text" id="rubricName" required></div>
       <div><label>Número de columnas:</label><input type="number" id="rubricColumns" min="1" required></div>
       <div><label>Número de filas:</label><input type="number" id="rubricRows" min="1" required></div>
-      <div><label>Ancho de columnas (px):</label><input type="number" id="rubricWidth" min="50"></div>
-      <div><label>Altura de filas (px):</label><input type="number" id="rubricHeight" min="20"></div>
-      <div><label>Seleccionar capacidad:</label><input type="text" id="rubricCapacity"></div>
+      <div><label>Ancho columnas(px):</label><input type="number" id="rubricWidth" min="50" value="100"></div>
+      <div><label>Altura filas(px):</label><input type="number" id="rubricHeight" min="20" value="50"></div>
+      <div><label>Capacidad:</label><input type="text" id="rubricCapacity"></div>
       <div><label>Evaluación formativa:</label><input type="checkbox" id="rubricFormative"></div>
       <div class="modal-footer">
         <button type="button" onclick="closeRubricModal()">Cancelar</button>
@@ -107,46 +109,48 @@ th{background:#2563eb;color:white;}
 </div>
 
 <script>
-// -----------------------------
 // Datos
-// -----------------------------
 let students = JSON.parse(localStorage.getItem('students')) || ["JUAN MANUEL CHAVARRIAGA ESCALANTE","RAYANE FATAH","NOLAN JUSTO FLORES KUPIS","ERIK HERMOSÍN REYES","IKER HURTADO PLAZA","LEV OBORIN","IZAN OLLER VALLES","JUAN LUIS TAPIA QUETGLAS","JUAN ANDRES UBIÑA FERRAGUT","MOISÉS VALLESPIR MOLINERA","MARIO VIETE BARBER"];
 let classSchedule = JSON.parse(localStorage.getItem('classSchedule')) || [];
 let rubrics = JSON.parse(localStorage.getItem('rubrics')) || [];
 
-// -----------------------------
-// Menú lateral colapsable
-// -----------------------------
-const sidebar = document.getElementById('sidebar');
-const menuToggle = document.getElementById('menuToggle');
-const evalGroupsBtn = document.getElementById('evalGroupsBtn');
-const evalGroupsSubmenu = document.getElementById('evalGroupsSubmenu');
+// Menú lateral
+const sidebar=document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click',()=>{sidebar.classList.toggle('collapsed');});
+document.getElementById('evalGroupsBtn').addEventListener('click',()=>{let sub=document.getElementById('evalGroupsSubmenu');sub.style.display=sub.style.display==='flex'?'none':'flex';});
 
-menuToggle.addEventListener('click',()=>{sidebar.classList.toggle('collapsed');});
-evalGroupsBtn.addEventListener('click',()=>{evalGroupsSubmenu.style.display=evalGroupsSubmenu.style.display==='flex'?'none':'flex';});
-
-// -----------------------------
 // Secciones
-// -----------------------------
 function showSection(section){
   const content=document.getElementById('content');
   content.innerHTML="";
   if(section==='hoy'){
-    content.innerHTML="<h1>📅 Clases de Hoy</h1><ul id='classList'></ul>";
-    const ul=document.getElementById('classList');
-    const today=new Date().getDay();
-    const todayClasses=classSchedule.filter(c=>c.days.includes(today));
-    if(todayClasses.length===0){const li=document.createElement('li');li.textContent="No hay clases hoy 🎉";ul.appendChild(li);}
-    else todayClasses.forEach(c=>{const li=document.createElement('li');li.textContent=`${c.name} (${c.subject}) ${c.start} - ${c.end}`;ul.appendChild(li);});
+    content.innerHTML="<h1>📅 Clases de Hoy</h1><div class='calendar' id='calendar'></div>";
+    renderCalendar();
   } else if(section==='config'){
     content.innerHTML="<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";
   }
 }
 
-// -----------------------------
+// Calendario semanal
+function renderCalendar(){
+  const calendar=document.getElementById('calendar');
+  calendar.innerHTML="";
+  const days=["Lunes","Martes","Miércoles","Jueves","Viernes"];
+  for(let i=0;i<5;i++){
+    const dayDiv=document.createElement('div');dayDiv.className='day';
+    dayDiv.innerHTML=`<strong>${days[i]}</strong>`;
+    // Clases del día
+    classSchedule.filter(c=>c.days.includes(i+1)).forEach(c=>{
+      const card=document.createElement('div');card.className='class-card';
+      card.textContent=`${c.name} (${c.subject}) ${c.start}-${c.end}`;
+      dayDiv.appendChild(card);
+    });
+    calendar.appendChild(dayDiv);
+  }
+}
+
 // Modal Nuevo Grupo-Clase
-// -----------------------------
-const classModal = document.getElementById('classModal');
+const classModal=document.getElementById('classModal');
 function openNewClassForm(){classModal.style.display='flex';}
 function closeClassModal(){classModal.style.display='none';}
 document.getElementById('modalClassForm').onsubmit=e=>{
@@ -164,10 +168,8 @@ document.getElementById('modalClassForm').onsubmit=e=>{
   showSection('hoy');
 }
 
-// -----------------------------
 // Modal Crear Rúbrica
-// -----------------------------
-const rubricModal = document.getElementById('rubricModal');
+const rubricModal=document.getElementById('rubricModal');
 function openNewRubricForm(){rubricModal.style.display='flex';}
 function closeRubricModal(){rubricModal.style.display='none';}
 document.getElementById('modalRubricForm').onsubmit=e=>{
@@ -184,6 +186,7 @@ document.getElementById('modalRubricForm').onsubmit=e=>{
   closeRubricModal();
 }
 
+// Inicial
 showSection('hoy');
 </script>
 </body>
