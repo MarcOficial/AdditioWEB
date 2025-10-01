@@ -1,12 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Additio Clone</title>
-  </head>
-  <body class="bg-gray-50">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clases de Hoy</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      background: #2563eb;
+      color: white;
+      width: 100%;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    .container {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 90%;
+    }
+    h2 {
+      margin-bottom: 1rem;
+      color: #2563eb;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 0.8rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    li:hover {
+      background: #f3f4f6;
+    }
+  </style>
+</head>
+<body>
+  <header>📚 Mis Clases de Hoy</header>
+  <div class="container">
+    <h2>¿Qué clases tengo hoy?</h2>
+    <ul id="classList"></ul>
+  </div>
+
+  <script>
+    // Lista de clases
+    const classes = [
+      "COMUNICACIÓ I SOCIETAT 1",
+      "Equips Elèctrics i Electrònics",
+      "Muntatge i Manteniment d'Equips Informàtics 25/26",
+      "CIÈNCIES APLICADES I INFORMÀTICA"
+    ];
+
+    // Simulamos horario simple (ejemplo: lunes y miércoles hay 2 clases)
+    const schedule = {
+      1: [classes[0], classes[1]], // Lunes
+      2: [classes[2], classes[3]], // Martes
+      3: [classes[0], classes[3]], // Miércoles
+      4: [classes[1], classes[2]], // Jueves
+      5: [classes[0], classes[1], classes[2]], // Viernes
+    };
+
+    // Día actual
+    const today = new Date().getDay(); // 0 = domingo ... 6 = sábado
+    const todayClasses = schedule[today] || ["No tienes clases hoy 🎉"];
+
+    // Mostrar en la página
+    const list = document.getElementById("classList");
+    todayClasses.forEach(cls => {
+      const li = document.createElement("li");
+      li.textContent = cls;
+      list.appendChild(li);
+    });
+  </script>
+</body>
 </html>
