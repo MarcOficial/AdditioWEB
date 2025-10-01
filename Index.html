@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Additio Clone Avanzado</title>
+<title>Additio Clone Completo</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:Arial,sans-serif;display:flex;height:100vh;background:#f3f4f6;color:#111827;}
@@ -21,6 +21,9 @@ button.small{margin-left:1rem;padding:2px 6px;font-size:0.8rem;border-radius:4px
 input, select{margin:0.3rem 0;padding:0.4rem;border:1px solid #cbd5e1;border-radius:6px;width:100%;}
 form div{margin-bottom:0.8rem;}
 h2{margin-top:1rem;margin-bottom:0.5rem;color:#1e40af;}
+table{width:100%;border-collapse:collapse;margin-top:1rem;}
+th,td{border:1px solid #cbd5e1;padding:0.5rem;text-align:center;}
+th{background:#2563eb;color:white;}
 </style>
 </head>
 <body>
@@ -30,8 +33,9 @@ h2{margin-top:1rem;margin-bottom:0.5rem;color:#1e40af;}
   <div class="menu">
     <button onclick="showSection('hoy')">📅 Hoy</button>
     <button onclick="showSection('alumnos')">👥 Alumnos</button>
-    <button onclick="showSection('rubricas')">📊 Rúbricas</button>
     <button onclick="showSection('horario')">🕒 Clases / Horario</button>
+    <button onclick="showSection('rubricas')">📊 Rúbricas</button>
+    <button onclick="showSection('evaluaciones')">📝 Evaluaciones</button>
     <button onclick="showSection('config')">⚙️ Configuración</button>
   </div>
 </div>
@@ -41,8 +45,10 @@ h2{margin-top:1rem;margin-bottom:0.5rem;color:#1e40af;}
 </div>
 
 <script>
-// Datos alumnos
-const students = [
+// -----------------------------
+// Datos iniciales
+// -----------------------------
+let students = JSON.parse(localStorage.getItem('students')) || [
   "JUAN MANUEL CHAVARRIAGA ESCALANTE",
   "RAYANE FATAH",
   "NOLAN JUSTO FLORES KUPIS",
@@ -55,55 +61,62 @@ const students = [
   "MOISÉS VALLESPIR MOLINERA",
   "MARIO VIETE BARBER"
 ];
+let classSchedule = JSON.parse(localStorage.getItem('classSchedule')) || [];
+let rubrics = JSON.parse(localStorage.getItem('rubrics')) || [];
+let evaluations = JSON.parse(localStorage.getItem('evaluations')) || {}; // {classId: {studentName: {rubricId: score}}}
 
-// Clases y horario
-let classSchedule = JSON.parse(localStorage.getItem("classSchedule") || "[]");
-
-// Rúbricas
-let rubrics = JSON.parse(localStorage.getItem("rubrics") || "[]");
-
-// Mostrar sección principal
+// -----------------------------
+// Función principal para cambiar secciones
+// -----------------------------
 function showSection(section){
-  const content=document.getElementById("content");
-  content.innerHTML="";
-  if(section==='hoy'){
-    content.innerHTML="<h1>📅 Clases de Hoy</h1><ul id='classList'></ul>";
-    loadToday();
-  }
-  else if(section==='alumnos'){
-    content.innerHTML="<h1>👥 Lista de Alumnos</h1><ul id='studentList'></ul>";
-    const ul=document.getElementById('studentList');
-    students.forEach(s=>{const li=document.createElement('li');li.textContent=s;ul.appendChild(li);});
-  }
-  else if(section==='rubricas'){
-    showRubricasSection();
-  }
-  else if(section==='horario'){
-    showHorarioSection();
-  }
-  else if(section==='config'){
-    content.innerHTML="<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";
-  }
+  const content = document.getElementById('content');
+  content.innerHTML = "";
+  if(section==='hoy'){showHoy();}
+  else if(section==='alumnos'){showAlumnos();}
+  else if(section==='horario'){showHorario();}
+  else if(section==='rubricas'){showRubricas();}
+  else if(section==='evaluaciones'){showEvaluaciones();}
+  else if(section==='config'){content.innerHTML="<h1>⚙️ Configuración</h1><p>Opciones de usuario y ajustes.</p>";}
 }
 
-// Función Hoy
-function loadToday(){
-  const ul=document.getElementById('classList'); ul.innerHTML="";
-  const today=new Date().getDay();
-  const weekday=today; //1-5
-  const todayClasses=classSchedule.filter(c=>c.days.includes(weekday)).sort((a,b)=>a.start.localeCompare(b.start));
+// -----------------------------
+// Sección Hoy
+// -----------------------------
+function showHoy(){
+  const content = document.getElementById('content');
+  content.innerHTML = "<h1>📅 Clases de Hoy</h1><ul id='classList'></ul>";
+  const ul = document.getElementById('classList');
+  const today = new Date().getDay();
+  const weekday = today; // 1=Monday..5=Friday
+  const todayClasses = classSchedule.filter(c=>c.days.includes(weekday)).sort((a,b)=>a.start.localeCompare(b.start));
   if(todayClasses.length===0){const li=document.createElement('li');li.textContent="No tienes clases hoy 🎉";ul.appendChild(li);}
   else todayClasses.forEach(c=>{const li=document.createElement('li');li.textContent=`${c.name} — ${c.start} / ${c.end}`;ul.appendChild(li);});
 }
 
-// Función Horario
-function showHorarioSection(){
+// -----------------------------
+// Sección Alumnos
+// -----------------------------
+function showAlumnos(){
+  const content = document.getElementById('content');
+  content.innerHTML = `<h1>👥 Lista de Alumnos</h1>
+    <form id="studentForm"><input type="text" id="studentName" placeholder="Nombre del alumno" required><button type="submit">Añadir</button></form>
+    <ul id="studentList"></ul>`;
+  const ul = document.getElementById('studentList');
+  function render(){ul.innerHTML="";students.forEach(s=>{const li=document.createElement('li');li.textContent=s; const btn=document.createElement('button');btn.textContent="Eliminar";btn.className="small";btn.onclick=()=>{students=students.filter(x=>x!==s);localStorage.setItem('students',JSON.stringify(students));render();};li.appendChild(btn);ul.appendChild(li);});}
+  render();
+  document.getElementById('studentForm').onsubmit = e => {e.preventDefault(); const name=document.getElementById('studentName').value.trim(); if(name){students.push(name);localStorage.setItem('students',JSON.stringify(students));document.getElementById('studentName').value="";render();}};
+}
+
+// -----------------------------
+// Sección Clases / Horario
+// -----------------------------
+function showHorario(){
   const content=document.getElementById('content');
   content.innerHTML=`
     <h1>🕒 Gestionar Clases / Horario</h1>
     <form id="classForm">
-      <div><label>Nombre de clase:</label><input type="text" id="className" required></div>
-      <div><label>Días (1=Lunes ...5=Viernes, separa con comas):</label><input type="text" id="classDays" placeholder="1,3,5" required></div>
+      <div><label>Nombre clase:</label><input type="text" id="className" required></div>
+      <div><label>Días (1=Lunes ...5=Viernes, separa con coma):</label><input type="text" id="classDays" placeholder="1,3,5" required></div>
       <div><label>Hora inicio:</label><input type="time" id="classStart" required></div>
       <div><label>Hora fin:</label><input type="time" id="classEnd" required></div>
       <button type="submit">Añadir / Guardar</button>
@@ -111,69 +124,133 @@ function showHorarioSection(){
     <h2>Clases existentes</h2>
     <ul id="scheduleList"></ul>
   `;
+  const render = ()=>{
+    const ul=document.getElementById('scheduleList');ul.innerHTML="";
+    classSchedule.forEach(c=>{
+      const li=document.createElement('li');li.textContent=`${c.name}: días ${c.days.join(', ')} de ${c.start} a ${c.end}`;
+      const btn=document.createElement('button');btn.textContent="Eliminar";btn.className="small";btn.onclick=()=>{classSchedule=classSchedule.filter(x=>x.id!==c.id);localStorage.setItem('classSchedule',JSON.stringify(classSchedule));render();};
+      li.appendChild(btn);ul.appendChild(li);
+    });
+  };
+  render();
   document.getElementById('classForm').onsubmit=e=>{
     e.preventDefault();
     const name=document.getElementById('className').value.trim();
-    const days=document.getElementById('classDays').value.split(',').map(d=>Number(d.trim())).filter(d=>d>=1 && d<=5);
+    const days=document.getElementById('classDays').value.split(',').map(d=>Number(d.trim())).filter(d=>d>=1&&d<=5);
     const start=document.getElementById('classStart').value;
     const end=document.getElementById('classEnd').value;
     classSchedule.push({id:Date.now(),name,days,start,end});
-    localStorage.setItem("classSchedule",JSON.stringify(classSchedule));
-    showHorarioSection();
+    localStorage.setItem('classSchedule',JSON.stringify(classSchedule));
+    document.getElementById('classForm').reset();
+    render();
   };
-  renderScheduleList();
-  function renderScheduleList(){
-    const ul=document.getElementById('scheduleList'); ul.innerHTML="";
-    classSchedule.forEach(c=>{
-      const li=document.createElement('li');
-      li.textContent=`${c.name}: días ${c.days.join(', ')} de ${c.start} a ${c.end}`;
-      const btn=document.createElement('button'); btn.textContent="Eliminar"; btn.className="small";
-      btn.onclick=()=>{classSchedule=classSchedule.filter(x=>x.id!==c.id);localStorage.setItem("classSchedule",JSON.stringify(classSchedule));showHorarioSection();}
-      li.appendChild(btn); ul.appendChild(li);
-    });
-  }
 }
 
-// Función Rúbricas
-function showRubricasSection(){
+// -----------------------------
+// Sección Rúbricas
+// -----------------------------
+function showRubricas(){
   const content=document.getElementById('content');
   content.innerHTML=`
     <h1>📊 Gestionar Rúbricas</h1>
     <form id="rubricForm">
       <div><label>Nombre rúbrica:</label><input type="text" id="rubricName" required></div>
-      <div><label>Criterios (nombre:porcentaje, separados por coma)</label><input type="text" id="rubricCriteria" placeholder="Examen:70,Trabajo:30" required></div>
+      <div><label>Criterios (nombre:porcentaje separados por coma)</label><input type="text" id="rubricCriteria" placeholder="Examen:70,Trabajo:30" required></div>
       <button type="submit">Crear Rúbrica</button>
     </form>
     <h2>Rúbricas existentes</h2>
     <ul id="rubricList"></ul>
   `;
+  const render=()=>{
+    const ul=document.getElementById('rubricList');ul.innerHTML="";
+    rubrics.forEach(r=>{
+      const li=document.createElement('li');li.textContent=`${r.name} — ${r.criteria.map(c=>c.name+":"+c.weight).join(', ')}`;
+      const btn=document.createElement('button');btn.textContent="Eliminar";btn.className="small";btn.onclick=()=>{rubrics=rubrics.filter(x=>x.id!==r.id);localStorage.setItem('rubrics',JSON.stringify(rubrics));render();};
+      li.appendChild(btn);ul.appendChild(li);
+    });
+  };
+  render();
   document.getElementById('rubricForm').onsubmit=e=>{
     e.preventDefault();
     const name=document.getElementById('rubricName').value.trim();
-    const criteriaInput=document.getElementById('rubricCriteria').value.trim();
-    const criteria=criteriaInput.split(',').map(c=>{
-      const [k,v]=c.split(':'); return {name:k.trim(),weight:Number(v.trim())};
-    });
+    const criteria=document.getElementById('rubricCriteria').value.trim().split(',').map(c=>{const [k,v]=c.split(':');return{name:k.trim(),weight:Number(v.trim())};});
     rubrics.push({id:Date.now(),name,criteria});
-    localStorage.setItem("rubrics",JSON.stringify(rubrics));
-    showRubricasSection();
+    localStorage.setItem('rubrics',JSON.stringify(rubrics));
+    document.getElementById('rubricForm').reset();
+    render();
   };
-  renderRubrics();
-  function renderRubrics(){
-    const ul=document.getElementById('rubricList'); ul.innerHTML="";
-    rubrics.forEach(r=>{
-      const li=document.createElement('li');
-      li.textContent=`${r.name} — ${r.criteria.map(c=>c.name+':'+c.weight).join(', ')}`;
-      const btn=document.createElement('button'); btn.textContent="Eliminar"; btn.className="small";
-      btn.onclick=()=>{rubrics=rubrics.filter(x=>x.id!==r.id);localStorage.setItem("rubrics",JSON.stringify(rubrics));showRubricasSection();}
-      li.appendChild(btn); ul.appendChild(li);
-    });
-  }
 }
 
-// Inicializar
-showSection('hoy');
-</script>
+// -----------------------------
+// Sección Evaluaciones / Notas
+// -----------------------------
+function showEvaluaciones(){
+  const content=document.getElementById('content');
+  content.innerHTML=`<h1>📝 Evaluaciones</h1>
+    <p>Selecciona clase y rúbrica:</p>
+    <div><select id="evalClass"></select></div>
+    <div><select id="evalRubric"></select></div>
+    <button onclick="loadEvaluationTable()">Cargar Tabla</button>
+    <div id="evalTableContainer"></div>`;
+  
+  const classSelect=document.getElementById('evalClass');
+  classSchedule.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;classSelect.appendChild(o);});
+  const rubricSelect=document.getElementById('evalRubric');
+  rubrics.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name;rubricSelect.appendChild(o);});
+}
 
+// -----------------------------
+// Función tabla de evaluaciones
+// -----------------------------
+function loadEvaluationTable(){
+  const classId=document.getElementById('evalClass').value;
+  const rubricId=document.getElementById('evalRubric').value;
+  if(!classId||!rubricId)return;
+  const rubric=rubrics.find(r=>r.id==rubricId);
+  const evals=evaluations[classId]||{};
+  const container=document.getElementById('evalTableContainer');
+  container.innerHTML="<table><thead><tr><th>Alumno</th>"+rubric.criteria.map(c=>`<th>${c.name} (${c.weight}%)</th>`).join("")+"<th>Nota final</th></tr></thead><tbody id='evalBody'></tbody></table>";
+  const tbody=document.getElementById('evalBody');
+  students.forEach(s=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${s}</td>`+rubric.criteria.map(c=>{
+      const score=evals[s]?.[rubricId]?.[c.name]||0;
+      return `<td><input type='number' min='0' max='100' value='${score}' onchange='updateScore("${classId}","${s}","${rubricId}","${c.name}",this.value)'></td>`;
+    }).join("")+`<td>${calculateFinal(evals[s]?.[rubricId],rubric)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// -----------------------------
+// Función actualizar nota
+// -----------------------------
+function updateScore(classId,student,rubricId,criterion,value){
+  if(!evaluations[classId])evaluations[classId]={};
+  if(!evaluations[classId][student])evaluations[classId][student]={};
+  if(!evaluations[classId][student][rubricId])evaluations[classId][student][rubricId]={};
+  evaluations[classId][student][rubricId][criterion]=Number(value);
+  localStorage.setItem('evaluations',JSON.stringify(evaluations));
+  loadEvaluationTable();
+}
+
+// -----------------------------
+// Calcular nota final
+// -----------------------------
+function calculateFinal(scores,rubric){
+  if(!scores)return 0;
+  let total=0;
+  rubric.criteria.forEach(c=>{
+    const val=scores[c.name]||0;
+    total+=val*c.weight/100;
+  });
+  return total.toFixed(2);
+}
+
+// -----------------------------
+// Inicializar
+// -----------------------------
+showSection('hoy');
+
+</script>
 </body>
 </html>
