@@ -167,4 +167,24 @@ document.getElementById('modalClassForm').onsubmit=e=>{
 // -----------------------------
 // Modal Crear Rúbrica
 // -----------------------------
-const
+const rubricModal = document.getElementById('rubricModal');
+function openNewRubricForm(){rubricModal.style.display='flex';}
+function closeRubricModal(){rubricModal.style.display='none';}
+document.getElementById('modalRubricForm').onsubmit=e=>{
+  e.preventDefault();
+  const name=document.getElementById('rubricName').value.trim();
+  const columns=parseInt(document.getElementById('rubricColumns').value);
+  const rows=parseInt(document.getElementById('rubricRows').value);
+  const width=parseInt(document.getElementById('rubricWidth').value)||100;
+  const height=parseInt(document.getElementById('rubricHeight').value)||50;
+  const capacity=document.getElementById('rubricCapacity').value;
+  const formative=document.getElementById('rubricFormative').checked;
+  rubrics.push({id:Date.now(),name,columns,rows,width,height,capacity,formative});
+  localStorage.setItem('rubrics',JSON.stringify(rubrics));
+  closeRubricModal();
+}
+
+showSection('hoy');
+</script>
+</body>
+</html>
