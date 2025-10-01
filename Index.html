@@ -200,4 +200,45 @@
         classSchedule.forEach(cls => {
           const li = document.createElement("li");
           li.textContent = `${cls.name}: días ${cls.days.join(", ")} de ${cls.start} a ${cls.end}`;
-          const btn = document.createElement("butto
+          const btn = document.createElement("button");
+          btn.textContent = "Eliminar";
+          btn.className = "small";
+          btn.onclick = () => {
+            classSchedule = classSchedule.filter(c => c.id !== cls.id);
+            localStorage.setItem("classSchedule", JSON.stringify(classSchedule));
+            showHorarioSection();
+          };
+          li.appendChild(btn);
+          ul.appendChild(li);
+        });
+      }
+    }
+
+    // Función para mostrar clases de hoy
+    function loadToday() {
+      const list = document.getElementById("classList");
+      list.innerHTML = "";
+      const today = new Date().getDay(); // 0 dom ... 6 sab
+      const weekday = today; // usamos 1–5
+      const classesToday = classSchedule
+        .filter(c => c.days.includes(weekday))
+        .sort((a,b) => a.start.localeCompare(b.start));
+
+      if (classesToday.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "No tienes clases hoy 🎉";
+        list.appendChild(li);
+      } else {
+        classesToday.forEach(cls => {
+          const li = document.createElement("li");
+          li.textContent = `${cls.name} — ${cls.start} / ${cls.end}`;
+          list.appendChild(li);
+        });
+      }
+    }
+
+    // Cargar sección inicial
+    showSection("hoy");
+  </script>
+</body>
+</html>
